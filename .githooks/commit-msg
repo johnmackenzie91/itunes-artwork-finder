@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Prevent commits being made to master branch
+branch="$(git rev-parse --abbrev-ref HEAD)"
+
+if [ "$branch" = "master" ]; then
+  echo "You can't commit directly to master branch"
+  exit 1
+fi
+
+# Run tests on packages that have been changed
+STAGED_GO_FILES=$(git diff --cached --name-only -- '*.go')
+
+if [[ $STAGED_GO_FILES != "" ]]; then
+    for file in $STAGED_GO_FILES; do
+        go test $(pwd)/$(dirname "${file}")
+    done
+fi
+
+# Check that the commmit message conforms to the convention commit specification
+# see https://www.conventionalcommits.org/en/v1.0.0/
+docker run --rm \
+  --volume $(pwd):/app \
+  --volume $(pwd)/.githooks/commitlint.config.js:/app/commitlint.config.js \
+  gtramontina/commitlint:8.3.5 \
+  --edit $1
+

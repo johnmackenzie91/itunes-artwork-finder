@@ -1,0 +1,90 @@
+openapi: 3.1.0
+info:
+  title: Itunes Artwork API Proxy
+  description: An API that retrieves entity artwork from Itunes api. Caches and returns in easier format.
+  version: 0.0.1
+
+servers:
+  - url: http://0.0.0.0:5678
+    description: Local server running on docker
+
+paths:
+  /artist/{artist}/album/{title}:
+    get:
+      summary: Returns all albums saved in cache.
+      description: Add search url params to reach out to itunes and begin builing caches.
+      parameters:
+        - in: path
+          name: artist
+          schema:
+            type: string
+          description: return only artwork by artist with name
+        - in: path
+          name: title
+          schema:
+            type: string
+          description: search for albums that match title
+        - in: query
+          name: size
+          schema:
+            type: integer
+          description: the size in px of the width and height
+
+      responses:
+        '200':
+          description: a success response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlbumList'
+        '404':
+          description: unable to find artwork for supplied artist and album
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '500':
+          description: an internal error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+
+        '502':
+          description: an error has occurred whilst trying to contact itunes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+
+components:
+  schemas:
+    AlbumList:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Album'
+    Album:
+      type: object
+      required:
+        - image_url
+        - artist_name
+        - title
+      properties:
+        image_url:
+          type: string
+        artist_name:
+          type: string
+        title:
+          type: string
+    APIError:
+      type: object
+      required:
+        - msg
+      properties:
+        msg:
+          type: string

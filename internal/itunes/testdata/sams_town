@@ -1,0 +1,39 @@
+HTTP/2 200 
+x-apple-jingle-correlation-key: 2BUUZIRJNWGP5ZPGDBMA5IISAE
+x-apple-request-uuid: d0694ca2-296d-8cfe-e5e6-18580ea11201
+x-apple-translated-wo-url: /WebObjects/MZStoreServices.woa/ws/wsSearch?country=gb&entity=album&term=the+killers+-+sams+town&urlDesc=
+apple-tk: false
+x-b3-spanid: e28a57e78e03deed
+content-type: text/javascript; charset=utf-8
+b3: d0694ca2296d8cfee5e618580ea11201-e28a57e78e03deed
+x-content-type-options: nosniff
+x-b3-traceid: d0694ca2296d8cfee5e618580ea11201
+x-webobjects-loadaverage: 0
+x-responding-instance: MZStoreServices:4124008:::
+apple-seq: 0
+content-disposition: attachment; filename=1.txt
+apple-originating-system: MZStoreServices
+strict-transport-security: max-age=31536000
+x-apple-orig-url: https://mzstoreservices-int.dslb.apple.com/search?country=gb&entity=album&term=the+killers+-+sams+town
+x-apple-application-site: MR22
+apple-timing-app: 62 ms
+x-apple-application-instance: 4124008
+cache-control: max-age=71084
+date: Tue, 17 Aug 2021 19:53:32 GMT
+content-length: 1883
+x-cache: TCP_MISS from a23-206-170-55.deploy.akamaitechnologies.com (AkamaiGHost/10.4.4-34529956) (-)
+x-true-cache-key: /L/itunes.apple.com/search vcd=2897 ci2=country=gb&entity=album&term=the+killers+-+sams+town///
+x-cache-remote: TCP_HIT from a23-206-170-39.deploy.akamaitechnologies.com (AkamaiGHost/10.4.4-34529956) (-)
+x-apple-partner: origin.0
+
+
+
+
+{
+ "resultCount":2,
+ "results": [
+{"wrapperType":"collection", "collectionType":"Album", "artistId":6483093, "collectionId":1440507523, "amgArtistId":643632, "artistName":"The Killers", "collectionName":"Sam's Town", "collectionCensoredName":"Sam's Town", "artistViewUrl":"https://music.apple.com/gb/artist/the-killers/6483093?uo=4", "collectionViewUrl":"https://music.apple.com/gb/album/sams-town/1440507523?uo=4", "artworkUrl60":"https://is4-ssl.mzstatic.com/image/thumb/Music124/v4/ed/76/b3/ed76b36d-cbf7-3518-b243-c2fdce84f53f/source/60x60bb.jpg", "artworkUrl100":"https://is4-ssl.mzstatic.com/image/thumb/Music124/v4/ed/76/b3/ed76b36d-cbf7-3518-b243-c2fdce84f53f/source/100x100bb.jpg", "collectionPrice":8.99, "collectionExplicitness":"cleaned", "contentAdvisoryRating":"Clean", "trackCount":16, "copyright":"℗ 2006 The Island Def Jam Music Group", "country":"GBR", "currency":"GBP", "releaseDate":"2006-12-27T08:00:00Z", "primaryGenreName":"Rock"}, 
+{"wrapperType":"collection", "collectionType":"Album", "artistId":6483093, "collectionId":1440891236, "amgArtistId":643632, "artistName":"The Killers", "collectionName":"Sam's Town", "collectionCensoredName":"Sam's Town", "artistViewUrl":"https://music.apple.com/gb/artist/the-killers/6483093?uo=4", "collectionViewUrl":"https://music.apple.com/gb/album/sams-town/1440891236?uo=4", "artworkUrl60":"https://is2-ssl.mzstatic.com/image/thumb/Music125/v4/3f/29/f0/3f29f099-2e2e-7c26-52f6-600f1ad405c3/source/60x60bb.jpg", "artworkUrl100":"https://is2-ssl.mzstatic.com/image/thumb/Music125/v4/3f/29/f0/3f29f099-2e2e-7c26-52f6-600f1ad405c3/source/100x100bb.jpg", "collectionPrice":5.99, "collectionExplicitness":"notExplicit", "trackCount":12, "copyright":"An Island Records Release; ℗ 2017 UMG Recordings, Inc.", "country":"GBR", "currency":"GBP", "releaseDate":"2006-10-02T07:00:00Z", "primaryGenreName":"Alternative"}]
+}
+
+
