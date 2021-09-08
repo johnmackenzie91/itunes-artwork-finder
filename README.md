@@ -1,23 +1,23 @@
 # Itunes Artwork Proxy API
 
 ## What is this?
-This is a golang api that calls and caches the amazon artwork api.
+This is a golang api that calls and caches the Itunes artwork api.
 
 ## How do I use it?
-There are two different ways of using this codebase.
-You can either pull the docker image straight from docker hub, or clone this codebase and run `make start logs`.
+The best way to begin using the api is to clone the codebase.
 
-#### Docker Image
-You can pull down and run the docker image via;
 ```shell script
-command for docker
+git clone https://github.com/johnmackenzie91/itunes-artwork-finder.git
 ```
 
-#### Clone the repo
-You can clone this repo down and run locally with;
+Run in docker in one of two ways;
 
+Via Make
 ```shell script
-    git clone ...
-    cd johnmackenzie91/itunes-artwork-proxy-api
-    make start logs
+make start logs
+```
+
+or straight via docker
+```shell script
+docker run -p 5678:80 itunes-proxy
 ```
