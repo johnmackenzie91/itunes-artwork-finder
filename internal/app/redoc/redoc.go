@@ -4,6 +4,9 @@ import (
 	"net/http"
 )
 
+//go:embed docs/*
+//var docs embed.FS
+
 // V1Docs returns the page that will host the specifiction
 func V1Docs() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
