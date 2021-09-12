@@ -27,3 +27,7 @@ gen-server:
 coveralls:
 	go tool cover -func=coverage.out
 	${GOPATH}/bin/goveralls -coverprofile=coverage.out -repotoken ${COVERALLS_TOKEN}
+
+gen-redoc:
+	docker run -v $(shell pwd):/work simplealpine/yaml2json:latest /work/openapi.yaml > ./internal/app/redoc/openapi_v1.json
+>>>>>>> feat: added handler endpoint
