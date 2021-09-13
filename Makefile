@@ -10,7 +10,7 @@ debug:
 	docker-compose -f ./debug/docker-compose.yml up
 
 test:
-	go test ./... -race
+	go test -v -covermode=count -coverprofile=coverage.out ./...
 
 integration-tests:
 	go test ./tests/... -long -race
@@ -23,3 +23,7 @@ gen-server:
 		-generate="types, chi-server" \
 		--exclude-schemas=APIError \
 		openapi.yaml  > ./internal/app/app.gen.go
+
+coveralls:
+	go tool cover -func=coverage.out
+	${GOPATH}/bin/goveralls -coverprofile=coverage.out -repotoken ${COVERALLS_TOKEN}
