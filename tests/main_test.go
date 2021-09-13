@@ -16,7 +16,7 @@ import (
 var long = flag.Bool("long", false, "if present run the long, integration tests")
 
 func TestMain(m *testing.M) {
-	if long == nil {
+	if long == nil || *long == false {
 		return
 	}
 
