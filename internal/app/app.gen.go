@@ -23,8 +23,8 @@ type AlbumList struct {
 	Data []Album `json:"data"`
 }
 
-// GetArtistArtistAlbumTitleParams defines parameters for GetArtistArtistAlbumTitle.
-type GetArtistArtistAlbumTitleParams struct {
+// GetV1ArtistArtistAlbumTitleParams defines parameters for GetV1ArtistArtistAlbumTitle.
+type GetV1ArtistArtistAlbumTitleParams struct {
 
 	// the size in px of the width and height
 	Size *int `json:"size,omitempty"`
@@ -33,8 +33,8 @@ type GetArtistArtistAlbumTitleParams struct {
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Returns all albums saved in cache.
-	// (GET /artist/{artist}/album/{title})
-	GetArtistArtistAlbumTitle(w http.ResponseWriter, r *http.Request, artist string, title string, params GetArtistArtistAlbumTitleParams)
+	// (GET /v1/artist/{artist}/album/{title})
+	GetV1ArtistArtistAlbumTitle(w http.ResponseWriter, r *http.Request, artist string, title string, params GetV1ArtistArtistAlbumTitleParams)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -42,8 +42,8 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// GetArtistArtistAlbumTitle operation middleware
-func (siw *ServerInterfaceWrapper) GetArtistArtistAlbumTitle(w http.ResponseWriter, r *http.Request) {
+// GetV1ArtistArtistAlbumTitle operation middleware
+func (siw *ServerInterfaceWrapper) GetV1ArtistArtistAlbumTitle(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var err error
@@ -67,7 +67,7 @@ func (siw *ServerInterfaceWrapper) GetArtistArtistAlbumTitle(w http.ResponseWrit
 	}
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params GetArtistArtistAlbumTitleParams
+	var params GetV1ArtistArtistAlbumTitleParams
 
 	// ------------- Optional query parameter "size" -------------
 	if paramValue := r.URL.Query().Get("size"); paramValue != "" {
@@ -80,7 +80,7 @@ func (siw *ServerInterfaceWrapper) GetArtistArtistAlbumTitle(w http.ResponseWrit
 		return
 	}
 
-	siw.Handler.GetArtistArtistAlbumTitle(w, r.WithContext(ctx), artist, title, params)
+	siw.Handler.GetV1ArtistArtistAlbumTitle(w, r.WithContext(ctx), artist, title, params)
 }
 
 // Handler creates http.Handler with routing matching OpenAPI spec.
@@ -95,7 +95,7 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Get("/artist/{artist}/album/{title}", wrapper.GetArtistArtistAlbumTitle)
+		r.Get("/v1/artist/{artist}/album/{title}", wrapper.GetV1ArtistArtistAlbumTitle)
 	})
 
 	return r
