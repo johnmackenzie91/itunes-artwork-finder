@@ -1,0 +1,27 @@
+{
+  "resultCount": 1,
+  "results": [
+    {
+      "wrapperType": "collection",
+      "collectionType": "Album",
+      "artistId": 62820413,
+      "collectionId": 330283015,
+      "amgArtistId": 744567,
+      "artistName": "Arctic Monkeys",
+      "collectionName": "Humbug (Bonus Track Version)",
+      "collectionCensoredName": "Humbug (Bonus Track Version)",
+      "artistViewUrl": "https://music.apple.com/gb/artist/arctic-monkeys/62820413?uo\u003d4",
+      "collectionViewUrl": "https://music.apple.com/gb/album/humbug-bonus-track-version/330283015?uo\u003d4",
+      "artworkUrl60": "https://is2-ssl.mzstatic.com/image/thumb/Music124/v4/29/51/a5/2951a569-a661-da35-98bd-9905ea02fcb7/source/60x60bb.jpg",
+      "artworkUrl100": "https://is2-ssl.mzstatic.com/image/thumb/Music124/v4/29/51/a5/2951a569-a661-da35-98bd-9905ea02fcb7/source/100x100bb.jpg",
+      "collectionPrice": 7.99,
+      "collectionExplicitness": "notExplicit",
+      "trackCount": 11,
+      "copyright": "℗ 2009 Domino Recording Co Ltd",
+      "country": "GBR",
+      "currency": "GBP",
+      "releaseDate": "2009-09-28T07:00:00Z",
+      "primaryGenreName": "Alternative"
+    }
+  ]
+}

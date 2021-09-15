@@ -7,3 +7,20 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "5678:80"
+    networks:
+      - itunes-artwork-proxy
+
+  itunes-mmock:
+    container_name: itunes-mmock
+    image: jordimartin/mmock:v3.0.3
+    volumes:
+      - ./mmock/itunes:/config
+    ports:
+      - 8082:8082
+      - 8083:8083
+    networks:
+      - itunes-artwork-proxy
+
+networks:
+  itunes-artwork-proxy:
+    name: itunes-artwork-proxy

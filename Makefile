@@ -20,7 +20,9 @@ integration-tests:
 	go test ./tests/... -long -race
 
 linter:
-	golangci-lint run --concurrency 5
+	golangci-lint run --concurrency 5 \
+		--disable-all -E errcheck -E golint -E bodyclose -E gochecknoinits -E whitespace -E misspell \
+		./...
 
 gen-server:
 	oapi-codegen -package="app" \

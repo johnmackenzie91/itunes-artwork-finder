@@ -11,6 +11,7 @@ type Config struct {
 	HTTPAddress       string `env:"HTTP_ADDRESS,default=:80"`
 	HTTPClientTimeout int    `env:"HTTP_CLIENT_TIMEOUT,default=5"`
 	LogLevel          string `env:"LOG_LEVEL,default=debug"`
+	ItunesEndpoint    string `env:"ITUNES_ENDPOINT"`
 }
 
 // MustLoad attempt to marshal the env vars. If and are missing or incorrect, method panics

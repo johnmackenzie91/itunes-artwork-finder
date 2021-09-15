@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/search",
+    "queryStringParameters": {
+      "country": ["gb"],
+      "entity": ["album"],
+      "term": ["arctic monkeys - humbug"]
+    }
+  },
+  "response": {
+    "statusCode": 200,
+    "headers": {
+      "Content-Type": [
+        "application/json"
+      ]
+    },
+    "body": "{{file.contents(/config/payloads/arctic_monkeys_humbug.json)}}"
+  }
+}
