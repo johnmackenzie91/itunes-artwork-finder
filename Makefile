@@ -1,9 +1,13 @@
 start:
-	docker run -p 5678:80 itunes-proxy
+	docker-compose up -d
 
+stop:
+	docker-compose down
 build:
-	docker build -t itunes-proxy .
+	docker-compose build
 
+logs:
+	docker-compose logs -f
 .PHONY: debug
 debug:
 	docker-compose -f ./debug/docker-compose.yml build
@@ -29,4 +33,6 @@ coveralls:
 	${GOPATH}/bin/goveralls -coverprofile=coverage.out -repotoken ${COVERALLS_TOKEN}
 
 gen-redoc:
-	docker run -v $(shell pwd):/work simplealpine/yaml2json:latest /work/openapi.yaml > ./internal/app/redoc/openapi_v1.json
+	docker run -v $(shell pwd):/work \
+		simplealpine/yaml2json:latest \
+		/work/openapi.yaml > ./internal/app/redoc/docs/openapi.json
