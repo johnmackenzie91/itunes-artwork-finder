@@ -30,4 +30,3 @@ coveralls:
 
 gen-redoc:
 	docker run -v $(shell pwd):/work simplealpine/yaml2json:latest /work/openapi.yaml > ./internal/app/redoc/openapi_v1.json
->>>>>>> feat: added handler endpoint
