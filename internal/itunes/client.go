@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/env"
+
 	"github.com/johnmackenzie91/commonlogger"
 )
 
@@ -26,7 +28,7 @@ type Client struct {
 }
 
 // NewClient implements a new itunes client
-func NewClient(logger commonlogger.ErrorInfoDebugger, opts ...Option) *Client {
+func NewClient(logger commonlogger.ErrorInfoDebugger, env env.Config) *Client {
 	// Set the defaults.
 	c := Client{
 		client: http.DefaultClient,
@@ -34,9 +36,8 @@ func NewClient(logger commonlogger.ErrorInfoDebugger, opts ...Option) *Client {
 		logger: logger,
 	}
 
-	// Override defaults with option values.. if any.
-	for _, op := range opts {
-		op(&c)
+	if env.ItunesEndpoint != "" {
+		c.domain = env.ItunesEndpoint
 	}
 	return &c
 }
