@@ -24,3 +24,6 @@ or straight via docker
 ```shell script
 docker run -p 5678:80 itunes-proxy
 ```
+
+## Which endpoints are currently provided.
+API documentation can be found by visiting /docs on the running app.
