@@ -13,15 +13,17 @@ jobs:
   build-publish:
     docker:
       - image: 'circleci/buildpack-deps:stretch'
+        user: root
     steps:
+      - checkout
+      - setup_remote_docker
       - run:
           name: Build Docker image
-          command: 'docker build -t itunes-artwork-proxy-api:latest .'
-      - setup_remote_docker
+          command: docker build -t johnmackenzie91/itunes-artwork-proxy-api:latest .
       - run:
           name: Publish Docker Image to Docker Hub
           command: echo "$DOCKERHUB_PASS" | docker login -u johnmackenzie91 --password-stdin
-      - run: docker push itunes-artwork-proxy-api:latest
+      - run: docker push johnmackenzie91/itunes-artwork-proxy-api:latest
 
 workflows:
   version: 2
