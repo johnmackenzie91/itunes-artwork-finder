@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/middleware/logging"
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/redoc"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/domain"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/itunes"
 
@@ -21,16 +22,19 @@ var _ ServerInterface = (*handlers)(nil)
 func New(client *itunes.Client, logger commonlogger.ErrorInfoDebugger) http.Handler {
 	r := chi.NewMux()
 
-	r.Route("/v1", func(r chi.Router) {
-		// init request/response middleware
-		r.Use(logging.LoggingMiddleware(logger))
+	// init request/response middleware
+	r.Use(logging.LoggingMiddleware(logger))
 
-		HandlerFromMux(handlers{Client: client, logger: logger}, r)
-		r.Get("/status", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("OK")) //nolint: errcheck #nothing be be gained from this check
-		})
+	// init the documentation endpoints
+	docEndpoints := redoc.New(logger)
+	r.Get("/docs", docEndpoints.V1Docs)
+	r.Get("/docs/spec", docEndpoints.V1Spec)
+
+	// init status endpoint for health check
+	r.Get("/status", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("OK")) //nolint: errcheck #nothing be be gained from this check
 	})
-	return r
+	return HandlerFromMux(handlers{Client: client, logger: logger}, r)
 }
 
 type handlers struct {
@@ -38,8 +42,8 @@ type handlers struct {
 	logger commonlogger.ErrorInfoDebugger
 }
 
-// GetArtistArtistAlbumTitle serves as the artist/:artist/album/:title endpoint
-func (s handlers) GetArtistArtistAlbumTitle(w http.ResponseWriter, r *http.Request, artist string, title string, params GetArtistArtistAlbumTitleParams) {
+// GetV1ArtistArtistAlbumTitle serves as the artist/:artist/album/:title endpoint
+func (s handlers) GetV1ArtistArtistAlbumTitle(w http.ResponseWriter, r *http.Request, artist string, title string, params GetV1ArtistArtistAlbumTitleParams) {
 	w.Header().Add("Content-Type", "application/json")
 
 	artist = normalise(artist)
