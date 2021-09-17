@@ -19,7 +19,7 @@ import (
 var _ ServerInterface = (*handlers)(nil)
 
 // New implements the implmentation of the interface generated from the openapi spec.
-func New(client *itunes.Client, logger commonlogger.ErrorInfoDebugger) http.Handler {
+func New(client itunes.Client, logger commonlogger.ErrorInfoDebugger) http.Handler {
 	r := chi.NewMux()
 
 	// init request/response middleware
@@ -38,7 +38,7 @@ func New(client *itunes.Client, logger commonlogger.ErrorInfoDebugger) http.Hand
 }
 
 type handlers struct {
-	Client *itunes.Client
+	Client itunes.Client
 	logger commonlogger.ErrorInfoDebugger
 }
 
