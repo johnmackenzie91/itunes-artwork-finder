@@ -28,7 +28,7 @@ func main() {
 	}
 
 	// Init router and app
-	a := app.New(&itunesCli, log)
+	a := app.New(itunesCli, log)
 	svr := server.New(e, a, log)
 
 	// wait until server shut down or os interrupts
