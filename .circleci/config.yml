@@ -1,0 +1,36 @@
+version: 2.0
+jobs:
+  test:
+    docker:
+      - image: 'circleci/golang:1.16'
+    parallelism: 2
+    steps:
+      - checkout
+      - run: make test
+      - run: go install github.com/mattn/goveralls@v0.0.9
+      - run: goveralls -coverprofile=coverage.out -service circleci -repotoken $COVERALLS_TOKEN
+
+  build-publish:
+    docker:
+      - image: 'circleci/buildpack-deps:stretch'
+        user: root
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: docker build -t johnmackenzie91/itunes-artwork-proxy-api:latest .
+      - run:
+          name: Publish Docker Image to Docker Hub
+          command: echo "$DOCKERHUB_PASS" | docker login -u johnmackenzie91 --password-stdin
+      - run: docker push johnmackenzie91/itunes-artwork-proxy-api:latest
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - test
+      - build-publish:
+          filters:
+            branches:
+              only: master

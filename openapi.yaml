@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.0
 info:
   title: Itunes Artwork API Proxy
   description: An API that retrieves entity artwork from Itunes api. Caches and returns in easier format.
@@ -9,23 +9,26 @@ servers:
     description: Local server running on docker
 
 paths:
-  /artist/{artist}/album/{title}:
+  /rest/v1/album/search:
     get:
-      summary: Returns all albums saved in cache.
-      description: Add search url params to reach out to itunes and begin builing caches.
+      summary: Returns all artwork given album.
+      description: Add search url params search Itunes for album artwork.
       parameters:
-        - in: path
+        - in: query
           name: artist
+          required: false
           schema:
             type: string
-          description: return only artwork by artist with name
-        - in: path
+          description: return only artwork by artist
+        - in: query
           name: title
+          required: true
           schema:
             type: string
           description: search for albums that match title
         - in: query
           name: size
+          required: false
           schema:
             type: integer
           description: the size in px of the width and height
@@ -37,6 +40,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AlbumList'
+        '400':
+          description: required parameter was missing from request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
         '404':
           description: unable to find artwork for supplied artist and album
           content:

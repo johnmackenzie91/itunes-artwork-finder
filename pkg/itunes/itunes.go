@@ -26,19 +26,19 @@ type Client struct {
 }
 
 // NewClient implements a new itunes client
-func NewClient(logger commonlogger.ErrorInfoDebugger, opts ...Option) *Client {
+func New(opts ...Option) (Client, error) {
 	// Set the defaults.
 	c := Client{
 		client: http.DefaultClient,
 		domain: defaultDomain,
-		logger: logger,
 	}
 
-	// Override defaults with option values.. if any.
-	for _, op := range opts {
-		op(&c)
+	for _, opt := range opts {
+		if err := opt(&c); err != nil {
+			return c, fmt.Errorf("failed to initialize client: %w", err)
+		}
 	}
-	return &c
+	return c, nil
 }
 
 // Search searches the itunes api for the given parameters

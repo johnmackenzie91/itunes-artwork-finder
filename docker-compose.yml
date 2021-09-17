@@ -1,0 +1,26 @@
+version: "2.1"
+services:
+  app:
+    container_name: itunes-artwork-proxy-api
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8081:80"
+    networks:
+      - itunes-artwork-proxy
+
+  itunes-mmock:
+    container_name: itunes-mmock
+    image: jordimartin/mmock:v3.0.3
+    volumes:
+      - ./mmock/itunes:/config
+    ports:
+      - 8082:8082
+      - 8083:8083
+    networks:
+      - itunes-artwork-proxy
+
+networks:
+  itunes-artwork-proxy:
+    name: itunes-artwork-proxy

@@ -8,8 +8,9 @@ import (
 	"strings"
 
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/middleware/logging"
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/redoc"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/domain"
-	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/itunes"
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/finder"
 
 	"github.com/go-chi/chi"
 	"github.com/johnmackenzie91/commonlogger"
@@ -18,62 +19,73 @@ import (
 var _ ServerInterface = (*handlers)(nil)
 
 // New implements the implmentation of the interface generated from the openapi spec.
-func New(client *itunes.Client, logger commonlogger.ErrorInfoDebugger) http.Handler {
+func New(client finder.Func, logger commonlogger.ErrorInfoDebugger) http.Handler {
 	r := chi.NewMux()
 
-	r.Route("/v1", func(r chi.Router) {
-		// init request/response middleware
-		r.Use(logging.LoggingMiddleware(logger))
+	// init request/response middleware
+	r.Use(logging.LoggingMiddleware(logger))
 
-		HandlerFromMux(handlers{Client: client, logger: logger}, r)
-		r.Get("/status", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("OK")) //nolint: errcheck #nothing be be gained from this check
-		})
+	// init the documentation endpoints
+	docEndpoints := redoc.New(logger)
+	r.Get("/docs", docEndpoints.V1Docs)
+	r.Get("/docs/spec", docEndpoints.V1Spec)
+
+	// init status endpoint for health check
+	r.Get("/status", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("OK")) //nolint: errcheck #nothing be be gained from this check
 	})
-	return r
+	return HandlerFromMux(handlers{Client: client, logger: logger}, r)
 }
 
 type handlers struct {
-	Client *itunes.Client
+	Client finder.Func
 	logger commonlogger.ErrorInfoDebugger
 }
 
-// GetArtistArtistAlbumTitle serves as the artist/:artist/album/:title endpoint
-func (s handlers) GetArtistArtistAlbumTitle(w http.ResponseWriter, r *http.Request, artist string, title string, params GetArtistArtistAlbumTitleParams) {
+func (s handlers) GetRestV1AlbumSearch(w http.ResponseWriter, r *http.Request, params GetRestV1AlbumSearchParams) {
 	w.Header().Add("Content-Type", "application/json")
 
-	artist = normalise(artist)
-	title = normalise(title)
+	if err := params.Validate(); err != nil {
+		s.writeErrorResponse(r.Context(), w, WrapError(err, ErrBadRequest))
+		return
+	}
+
 	// search itunes
-	searchTerm := fmt.Sprintf("%s - %s", artist, title)
-	out, err := s.Client.Search(r.Context(), searchTerm, "gb", "album")
+	searchTerm := params.Title
+	if params.Artist != nil {
+		searchTerm = fmt.Sprintf("%s - %s", *params.Artist, searchTerm)
+	}
+	out, err := s.Client(r.Context(), searchTerm, "gb", "album")
 
 	if err != nil {
 		s.writeErrorResponse(r.Context(), w, WrapError(err, ErrBadGateway))
 		return
 	}
 
-	size := fetchQueryParameter(r, "size")
-
 	rtn := []domain.Album{}
 
 	for _, item := range out.Results {
-		artistMatch := normalise(item.ArtistName) == artist
+		artistMatch := true
+		if params.Artist != nil {
+			artistMatch = normalise(item.Artist) == *params.Artist
+		}
 
-		if !artistMatch || !strings.Contains(normalise(item.CollectionName), title) {
+		titlesMatch := strings.Contains(normalise(item.CollectionName), params.Title)
+
+		if artistMatch == false || titlesMatch == false {
 			s.logger.Debug("dropping result", item)
 			continue
 		}
 
 		row := domain.Album{
-			ImageURL:   item.ArtworkURL100,
+			ImageURL:   item.Link,
 			Title:      item.CollectionName,
-			ArtistName: item.ArtistName,
+			ArtistName: item.Artist,
 		}
 
-		if len(size) > 0 {
+		if params.Size != nil {
 			// Update return itunes return values to match the size requested by OUR client
-			row.ImageURL = strings.Replace(row.ImageURL, "100x100", fmt.Sprintf("%sx%s", size[0], size[0]), 1)
+			row.ImageURL = strings.Replace(row.ImageURL, "100x100", fmt.Sprintf("%dx%d", params.Size, params.Size), 1)
 		}
 		rtn = append(rtn, row)
 	}
@@ -93,14 +105,6 @@ func (s handlers) GetArtistArtistAlbumTitle(w http.ResponseWriter, r *http.Reque
 		s.writeErrorResponse(r.Context(), w, WrapError(err, ErrInternal))
 		return
 	}
-}
-
-// fetchQueryParameter grabs parameter from the url. The query parameters, not the route parameters
-func fetchQueryParameter(r *http.Request, key string) []string {
-	if v, ok := r.URL.Query()[key]; ok {
-		return v
-	}
-	return nil
 }
 
 // normalise removes unwanted chars from client input

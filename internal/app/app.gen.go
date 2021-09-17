@@ -23,8 +23,14 @@ type AlbumList struct {
 	Data []Album `json:"data"`
 }
 
-// GetArtistArtistAlbumTitleParams defines parameters for GetArtistArtistAlbumTitle.
-type GetArtistArtistAlbumTitleParams struct {
+// GetRestV1AlbumSearchParams defines parameters for GetRestV1AlbumSearch.
+type GetRestV1AlbumSearchParams struct {
+
+	// return only artwork by artist
+	Artist *string `json:"artist,omitempty"`
+
+	// search for albums that match title
+	Title string `json:"title"`
 
 	// the size in px of the width and height
 	Size *int `json:"size,omitempty"`
@@ -32,9 +38,9 @@ type GetArtistArtistAlbumTitleParams struct {
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Returns all albums saved in cache.
-	// (GET /artist/{artist}/album/{title})
-	GetArtistArtistAlbumTitle(w http.ResponseWriter, r *http.Request, artist string, title string, params GetArtistArtistAlbumTitleParams)
+	// Returns all artwork given album.
+	// (GET /rest/v1/album/search)
+	GetRestV1AlbumSearch(w http.ResponseWriter, r *http.Request, params GetRestV1AlbumSearchParams)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -42,32 +48,39 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// GetArtistArtistAlbumTitle operation middleware
-func (siw *ServerInterfaceWrapper) GetArtistArtistAlbumTitle(w http.ResponseWriter, r *http.Request) {
+// GetRestV1AlbumSearch operation middleware
+func (siw *ServerInterfaceWrapper) GetRestV1AlbumSearch(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var err error
 
-	// ------------- Path parameter "artist" -------------
-	var artist string
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetRestV1AlbumSearchParams
 
-	err = runtime.BindStyledParameter("simple", false, "artist", chi.URLParam(r, "artist"), &artist)
+	// ------------- Optional query parameter "artist" -------------
+	if paramValue := r.URL.Query().Get("artist"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "artist", r.URL.Query(), &params.Artist)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Invalid format for parameter artist: %s", err), http.StatusBadRequest)
 		return
 	}
 
-	// ------------- Path parameter "title" -------------
-	var title string
+	// ------------- Required query parameter "title" -------------
+	if paramValue := r.URL.Query().Get("title"); paramValue != "" {
 
-	err = runtime.BindStyledParameter("simple", false, "title", chi.URLParam(r, "title"), &title)
+	} else {
+		http.Error(w, "Query argument title is required, but not found", http.StatusBadRequest)
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "title", r.URL.Query(), &params.Title)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Invalid format for parameter title: %s", err), http.StatusBadRequest)
 		return
 	}
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params GetArtistArtistAlbumTitleParams
 
 	// ------------- Optional query parameter "size" -------------
 	if paramValue := r.URL.Query().Get("size"); paramValue != "" {
@@ -80,7 +93,7 @@ func (siw *ServerInterfaceWrapper) GetArtistArtistAlbumTitle(w http.ResponseWrit
 		return
 	}
 
-	siw.Handler.GetArtistArtistAlbumTitle(w, r.WithContext(ctx), artist, title, params)
+	siw.Handler.GetRestV1AlbumSearch(w, r.WithContext(ctx), params)
 }
 
 // Handler creates http.Handler with routing matching OpenAPI spec.
@@ -95,7 +108,7 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Get("/artist/{artist}/album/{title}", wrapper.GetArtistArtistAlbumTitle)
+		r.Get("/rest/v1/album/search", wrapper.GetRestV1AlbumSearch)
 	})
 
 	return r

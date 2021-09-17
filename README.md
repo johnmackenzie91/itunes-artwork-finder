@@ -1,5 +1,8 @@
 # Itunes Artwork Proxy API
 
+[![CircleCI](https://circleci.com/gh/johnmackenzie91/itunes-artwork-finder/tree/master.svg?style=svg&circle-token=<YOUR-TOKEN>)](https://circleci.com/gh/johnmackenzie91/itunes-artwork-finder/tree/master)
+[![Coverage Status](https://coveralls.io/repos/github/johnmackenzie91/itunes-artwork-finder/badge.svg?branch=<YOUR-HEAD-BRANCH>)](https://coveralls.io/github/johnmackenzie91/itunes-artwork-finder?branch=master)
+
 ## What is this?
 This is a golang api that calls and caches the Itunes artwork api.
 
@@ -21,3 +24,6 @@ or straight via docker
 ```shell script
 docker run -p 5678:80 itunes-proxy
 ```
+
+## Which endpoints are currently provided.
+API documentation can be found by visiting /docs on the running app.

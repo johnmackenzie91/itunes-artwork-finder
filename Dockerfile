@@ -1,5 +1,5 @@
 # start a golang base image, version 1.8
-FROM golang:1.14 as builder
+FROM golang:1.16 as builder
 
 WORKDIR /go/src
 
