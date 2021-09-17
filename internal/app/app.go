@@ -10,7 +10,7 @@ import (
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/middleware/logging"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/redoc"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/domain"
-	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/pkg/itunes"
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/finder"
 
 	"github.com/go-chi/chi"
 	"github.com/johnmackenzie91/commonlogger"
@@ -18,8 +18,13 @@ import (
 
 var _ ServerInterface = (*handlers)(nil)
 
+//go:generate mockery --name Searcher
+type Searcher interface {
+	Search(ctx context.Context, term, country, entity string) (finder.SearchResponse, error)
+}
+
 // New implements the implmentation of the interface generated from the openapi spec.
-func New(client itunes.Client, logger commonlogger.ErrorInfoDebugger) http.Handler {
+func New(client Searcher, logger commonlogger.ErrorInfoDebugger) http.Handler {
 	r := chi.NewMux()
 
 	// init request/response middleware
@@ -38,7 +43,7 @@ func New(client itunes.Client, logger commonlogger.ErrorInfoDebugger) http.Handl
 }
 
 type handlers struct {
-	Client itunes.Client
+	Client Searcher
 	logger commonlogger.ErrorInfoDebugger
 }
 
