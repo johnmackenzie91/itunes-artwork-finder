@@ -47,14 +47,19 @@ type handlers struct {
 	logger commonlogger.ErrorInfoDebugger
 }
 
-// GetV1ArtistArtistAlbumTitle serves as the artist/:artist/album/:title endpoint
-func (s handlers) GetV1ArtistArtistAlbumTitle(w http.ResponseWriter, r *http.Request, artist string, title string, params GetV1ArtistArtistAlbumTitleParams) {
+func (s handlers) GetRestV1AlbumSearch(w http.ResponseWriter, r *http.Request, params GetRestV1AlbumSearchParams) {
 	w.Header().Add("Content-Type", "application/json")
 
-	artist = normalise(artist)
-	title = normalise(title)
+	if err := params.Validate(); err != nil {
+		s.writeErrorResponse(r.Context(), w, WrapError(err, ErrBadRequest))
+		return
+	}
+
 	// search itunes
-	searchTerm := fmt.Sprintf("%s - %s", artist, title)
+	searchTerm := params.Title
+	if params.Artist != nil {
+		searchTerm = fmt.Sprintf("%s - %s", *params.Artist, searchTerm)
+	}
 	out, err := s.Client.Search(r.Context(), searchTerm, "gb", "album")
 
 	if err != nil {
@@ -67,17 +72,22 @@ func (s handlers) GetV1ArtistArtistAlbumTitle(w http.ResponseWriter, r *http.Req
 	rtn := []domain.Album{}
 
 	for _, item := range out.Results {
-		artistMatch := normalise(item.ArtistName) == artist
+		artistMatch := true
+		if params.Artist != nil {
+			artistMatch = normalise(item.Artist) == *params.Artist
+		}
 
-		if !artistMatch || !strings.Contains(normalise(item.CollectionName), title) {
+		titlesMatch := strings.Contains(normalise(item.CollectionName), params.Title)
+
+		if artistMatch == false || titlesMatch == false {
 			s.logger.Debug("dropping result", item)
 			continue
 		}
 
 		row := domain.Album{
-			ImageURL:   item.ArtworkURL100,
+			ImageURL:   item.Link,
 			Title:      item.CollectionName,
-			ArtistName: item.ArtistName,
+			ArtistName: item.Artist,
 		}
 
 		if len(size) > 0 {

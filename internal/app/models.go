@@ -2,13 +2,16 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 )
 
 var (
 	ErrNotFound   = sentinelAPIError{Code: http.StatusNotFound, Msg: "not found"}
 	ErrInternal   = sentinelAPIError{Code: http.StatusBadRequest, Msg: "internal server error"}
-	ErrBadGateway = sentinelAPIError{Code: http.StatusBadRequest, Msg: "bad gateway"}
+	ErrBadGateway = sentinelAPIError{Code: http.StatusBadGateway, Msg: "bad gateway"}
+	ErrBadRequest = sentinelAPIError{Code: http.StatusBadRequest, Msg: "bad request"}
 )
 
 type APIError interface {
@@ -60,4 +63,20 @@ func (e sentinelWrappedError) APIError() (int, string) {
 // WrapError wraps an internal possibly sensitive error into a sentinel error
 func WrapError(err error, sentinel sentinelAPIError) error {
 	return sentinelWrappedError{error: err, sentinel: sentinel}
+}
+
+type errMissingParameters []string
+
+func (e errMissingParameters) Error() string {
+	return fmt.Sprintf("required parameters missing: %s", strings.Join(e, ", "))
+}
+
+// Validate ensures that all the correct properties are set
+func (p GetRestV1AlbumSearchParams) Validate() error {
+	missing := []string{}
+	if p.Title == "" {
+		missing = append(missing, "title")
+		return errMissingParameters(missing)
+	}
+	return nil
 }
