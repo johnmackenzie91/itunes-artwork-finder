@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/itunes/mocks"
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/pkg/itunes/mocks"
 
 	"github.com/johnmackenzie91/httptestfixtures"
 	"github.com/sirupsen/logrus"

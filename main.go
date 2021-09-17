@@ -6,9 +6,9 @@ import (
 
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/env"
-	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/itunes"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/logger"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/server"
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/pkg/itunes"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 	log := logger.New(e)
 
 	// init clients that speak to downstream services
-	itunesCli := itunes.NewClient(log, e)
+	itunesCli := itunes.New(log, e)
 
 	// Init router and app
 	a := app.New(itunesCli, log)
