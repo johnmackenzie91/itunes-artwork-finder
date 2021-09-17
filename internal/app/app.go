@@ -10,7 +10,7 @@ import (
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/middleware/logging"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/redoc"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/domain"
-	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/itunes"
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/pkg/itunes"
 
 	"github.com/go-chi/chi"
 	"github.com/johnmackenzie91/commonlogger"

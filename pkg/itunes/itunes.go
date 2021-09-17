@@ -28,7 +28,7 @@ type Client struct {
 }
 
 // NewClient implements a new itunes client
-func NewClient(logger commonlogger.ErrorInfoDebugger, env env.Config) *Client {
+func New(logger commonlogger.ErrorInfoDebugger, env env.Config) *Client {
 	// Set the defaults.
 	c := Client{
 		client: http.DefaultClient,
