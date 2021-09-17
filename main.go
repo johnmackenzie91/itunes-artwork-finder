@@ -21,14 +21,10 @@ func main() {
 	log := logger.New(e)
 
 	// init clients that speak to downstream services
-	itunesCli, err := finder.New(e)
-
-	if err != nil {
-		panic(err)
-	}
+	finderFunc := finder.Itunes(e)
 
 	// Init router and app
-	a := app.New(itunesCli, log)
+	a := app.New(finderFunc, log)
 	svr := server.New(e, a, log)
 
 	// wait until server shut down or os interrupts

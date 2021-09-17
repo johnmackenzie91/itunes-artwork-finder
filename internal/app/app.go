@@ -18,13 +18,8 @@ import (
 
 var _ ServerInterface = (*handlers)(nil)
 
-//go:generate mockery --name Searcher
-type Searcher interface {
-	Search(ctx context.Context, term, country, entity string) (finder.SearchResponse, error)
-}
-
 // New implements the implmentation of the interface generated from the openapi spec.
-func New(client Searcher, logger commonlogger.ErrorInfoDebugger) http.Handler {
+func New(client finder.Func, logger commonlogger.ErrorInfoDebugger) http.Handler {
 	r := chi.NewMux()
 
 	// init request/response middleware
@@ -43,7 +38,7 @@ func New(client Searcher, logger commonlogger.ErrorInfoDebugger) http.Handler {
 }
 
 type handlers struct {
-	Client Searcher
+	Client finder.Func
 	logger commonlogger.ErrorInfoDebugger
 }
 
@@ -60,7 +55,7 @@ func (s handlers) GetRestV1AlbumSearch(w http.ResponseWriter, r *http.Request, p
 	if params.Artist != nil {
 		searchTerm = fmt.Sprintf("%s - %s", *params.Artist, searchTerm)
 	}
-	out, err := s.Client.Search(r.Context(), searchTerm, "gb", "album")
+	out, err := s.Client(r.Context(), searchTerm, "gb", "album")
 
 	if err != nil {
 		s.writeErrorResponse(r.Context(), w, WrapError(err, ErrBadGateway))

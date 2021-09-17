@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/mocks"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/finder"
 
 	"github.com/sirupsen/logrus"
@@ -77,7 +76,7 @@ func Test_handlers_GetRestV1AlbumSearch(t *testing.T) {
 	testCases := []struct {
 		desc            string
 		inputParameters GetRestV1AlbumSearchParams
-		setupMocks      func(mock *mocks.Searcher)
+		mockCallback    finder.Func
 		expectedOut     string
 		expectedCode    int
 	}{
@@ -86,8 +85,8 @@ func Test_handlers_GetRestV1AlbumSearch(t *testing.T) {
 			inputParameters: GetRestV1AlbumSearchParams{
 				Title: "some title",
 			},
-			setupMocks: func(mock *mocks.Searcher) {
-				res := finder.SearchResponse{
+			mockCallback: func(ctx context.Context, term, country, entity string) (finder.SearchResponse, error) {
+				return finder.SearchResponse{
 					ResultCount: 1,
 					Results: []finder.Result{
 						{
@@ -96,8 +95,7 @@ func Test_handlers_GetRestV1AlbumSearch(t *testing.T) {
 							Link:           "http://some-artist.jpeg",
 						},
 					},
-				}
-				mock.On("Search", stubCtx, "some title", "gb", "album").Return(res, nil)
+				}, nil
 			},
 			expectedCode: http.StatusOK,
 			expectedOut:  `[{"title":"some title","artist_name":"some artist","image_url":"http://some-artist.jpeg"}]`,
@@ -107,8 +105,8 @@ func Test_handlers_GetRestV1AlbumSearch(t *testing.T) {
 			inputParameters: GetRestV1AlbumSearchParams{
 				Title: "some title",
 			},
-			setupMocks: func(mock *mocks.Searcher) {
-				mock.On("Search", stubCtx, "some title", "gb", "album").Return(emptyResponse, errTest)
+			mockCallback: func(ctx context.Context, term, country, entity string) (finder.SearchResponse, error) {
+				return finder.SearchResponse{}, errTest
 			},
 			expectedCode: http.StatusBadGateway,
 			expectedOut:  `{"msg":"bad gateway"}`,
@@ -116,7 +114,7 @@ func Test_handlers_GetRestV1AlbumSearch(t *testing.T) {
 		{
 			desc:            "3. required artist parameter missing",
 			inputParameters: GetRestV1AlbumSearchParams{},
-			setupMocks:      func(mock *mocks.Searcher) {},
+			mockCallback:    finder.Func(nil),
 			expectedCode:    http.StatusBadRequest,
 			expectedOut:     `{"msg":"bad request"}`,
 		},
@@ -126,8 +124,8 @@ func Test_handlers_GetRestV1AlbumSearch(t *testing.T) {
 				Artist: func(input string) *string { return &input }("some artist"),
 				Title:  "album two",
 			},
-			setupMocks: func(mock *mocks.Searcher) {
-				res := finder.SearchResponse{
+			mockCallback: func(ctx context.Context, term, country, entity string) (finder.SearchResponse, error) {
+				return finder.SearchResponse{
 					ResultCount: 1,
 					Results: []finder.Result{
 						{
@@ -141,8 +139,7 @@ func Test_handlers_GetRestV1AlbumSearch(t *testing.T) {
 							Link:           "http://album-two.jpeg",
 						},
 					},
-				}
-				mock.On("Search", stubCtx, "some artist - album two", "gb", "album").Return(res, nil)
+				}, nil
 			},
 			expectedCode: http.StatusOK,
 			expectedOut:  `[{"title":"album two","artist_name":"some artist","image_url":"http://album-two.jpeg"}]`,
@@ -152,12 +149,9 @@ func Test_handlers_GetRestV1AlbumSearch(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
 			// arrange
-			searcher := mocks.Searcher{}
-			tc.setupMocks(&searcher)
-
 			// act
 			sut := handlers{
-				Client: &searcher,
+				Client: tc.mockCallback,
 				logger: logrus.New(),
 			}
 			w := httptest.NewRecorder()
@@ -166,7 +160,6 @@ func Test_handlers_GetRestV1AlbumSearch(t *testing.T) {
 			// assert
 			assert.Equal(t, tc.expectedCode, w.Code)
 			assert.Equal(t, tc.expectedOut, w.Body.String())
-			searcher.AssertExpectations(t)
 		})
 	}
 }
