@@ -90,7 +90,7 @@ func (s handlers) GetRestV1AlbumSearch(w http.ResponseWriter, r *http.Request, p
 
 		if params.Size != nil {
 			// Update return itunes return values to match the size requested by OUR client
-			row.ImageURL = strings.Replace(row.ImageURL, "100x100", fmt.Sprintf("%sx%s", params.Size, params.Size), 1)
+			row.ImageURL = strings.Replace(row.ImageURL, "100x100", fmt.Sprintf("%dx%d", params.Size, params.Size), 1)
 		}
 		rtn = append(rtn, row)
 	}
