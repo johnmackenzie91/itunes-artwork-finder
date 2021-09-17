@@ -6,9 +6,9 @@ import (
 
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/env"
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/finder"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/logger"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/server"
-	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/pkg/itunes"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 	log := logger.New(e)
 
 	// init clients that speak to downstream services
-	itunesCli, err := itunes.New(itunes.WithLogger(log), itunes.SetDomain(e.ItunesEndpoint))
+	itunesCli, err := finder.New(e)
 
 	if err != nil {
 		panic(err)
