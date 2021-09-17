@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/env"
-
 	"github.com/johnmackenzie91/commonlogger"
 )
 
@@ -28,18 +26,19 @@ type Client struct {
 }
 
 // NewClient implements a new itunes client
-func New(logger commonlogger.ErrorInfoDebugger, env env.Config) *Client {
+func New(opts ...Option) (Client, error) {
 	// Set the defaults.
 	c := Client{
 		client: http.DefaultClient,
 		domain: defaultDomain,
-		logger: logger,
 	}
 
-	if env.ItunesEndpoint != "" {
-		c.domain = env.ItunesEndpoint
+	for _, opt := range opts {
+		if err := opt(&c); err != nil {
+			return c, fmt.Errorf("failed to initialize client: %w", err)
+		}
 	}
-	return &c
+	return c, nil
 }
 
 // Search searches the itunes api for the given parameters

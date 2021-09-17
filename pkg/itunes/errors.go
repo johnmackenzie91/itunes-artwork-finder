@@ -8,3 +8,9 @@ type errNon2XX int
 func (e errNon2XX) Error() string {
 	return fmt.Errorf("itunes returned a non 200 status: %d", e).Error()
 }
+
+type errBadURL string
+
+func (e errBadURL) Error() string {
+	return fmt.Errorf("bad url passed for itunes endpoint: %s", string(e)).Error()
+}

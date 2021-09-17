@@ -21,10 +21,14 @@ func main() {
 	log := logger.New(e)
 
 	// init clients that speak to downstream services
-	itunesCli := itunes.New(log, e)
+	itunesCli, err := itunes.New(itunes.WithLogger(log), itunes.SetDomain(e.ItunesEndpoint))
+
+	if err != nil {
+		panic(err)
+	}
 
 	// Init router and app
-	a := app.New(itunesCli, log)
+	a := app.New(&itunesCli, log)
 	svr := server.New(e, a, log)
 
 	// wait until server shut down or os interrupts
