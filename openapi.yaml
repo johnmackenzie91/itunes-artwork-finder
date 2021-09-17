@@ -9,20 +9,20 @@ servers:
     description: Local server running on docker
 
 paths:
-  rest/v1/album/search:
+  /rest/v1/album/search:
     get:
       summary: Returns all artwork given album.
       description: Add search url params search Itunes for album artwork.
       parameters:
         - in: query
           name: artist
-          required: true
+          required: false
           schema:
             type: string
           description: return only artwork by artist
         - in: query
           name: title
-          required: false
+          required: true
           schema:
             type: string
           description: search for albums that match title
