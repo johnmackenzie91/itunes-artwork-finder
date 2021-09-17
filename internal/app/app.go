@@ -67,8 +67,6 @@ func (s handlers) GetRestV1AlbumSearch(w http.ResponseWriter, r *http.Request, p
 		return
 	}
 
-	size := fetchQueryParameter(r, "size")
-
 	rtn := []domain.Album{}
 
 	for _, item := range out.Results {
@@ -90,9 +88,9 @@ func (s handlers) GetRestV1AlbumSearch(w http.ResponseWriter, r *http.Request, p
 			ArtistName: item.Artist,
 		}
 
-		if len(size) > 0 {
+		if params.Size != nil {
 			// Update return itunes return values to match the size requested by OUR client
-			row.ImageURL = strings.Replace(row.ImageURL, "100x100", fmt.Sprintf("%sx%s", size[0], size[0]), 1)
+			row.ImageURL = strings.Replace(row.ImageURL, "100x100", fmt.Sprintf("%sx%s", params.Size, params.Size), 1)
 		}
 		rtn = append(rtn, row)
 	}
@@ -112,14 +110,6 @@ func (s handlers) GetRestV1AlbumSearch(w http.ResponseWriter, r *http.Request, p
 		s.writeErrorResponse(r.Context(), w, WrapError(err, ErrInternal))
 		return
 	}
-}
-
-// fetchQueryParameter grabs parameter from the url. The query parameters, not the route parameters
-func fetchQueryParameter(r *http.Request, key string) []string {
-	if v, ok := r.URL.Query()[key]; ok {
-		return v
-	}
-	return nil
 }
 
 // normalise removes unwanted chars from client input
