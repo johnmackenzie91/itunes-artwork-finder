@@ -14,7 +14,7 @@ This can be accomplished by;
 docker run -p 8080:80 johnmackenzie91/itunes-artwork-proxy-api:latest
 ```
 
-You can also pul down the source code from github and run that way.
+You can also pull down the source code from github and run that way.
 
 ```shell script
 $ git clone https://github.com/johnmackenzie91/itunes-artwork-finder.git
@@ -23,4 +23,4 @@ $ make start logs
 ```
 
 ## Which endpoints are currently provided.
-API documentation can be found by visiting http://0.0.0.0:8081/docs once the app is up and running.
+API documentation can be found by visiting http://0.0.0.0:8080/docs once the app is up and running.
