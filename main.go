@@ -6,9 +6,9 @@ import (
 
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/env"
-	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/finder"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/logger"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/server"
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/artwork"
 )
 
 func main() {
@@ -21,10 +21,14 @@ func main() {
 	log := logger.New(e)
 
 	// init clients that speak to downstream services
-	finderFunc := finder.Itunes(e)
+	finderAdapter, err := artwork.Itunes(e.ItunesEndpoint, log)
+
+	if err != nil {
+		panic(err)
+	}
 
 	// Init router and app
-	a := app.New(finderFunc, log)
+	a := app.New(finderAdapter, log)
 	svr := server.New(e, a, log)
 
 	// wait until server shut down or os interrupts
