@@ -42,9 +42,10 @@ func (c Client) attemptRequest(r *http.Request) (*http.Response, error) {
 	if err != nil {
 		return nil, fmt.Errorf("search itunes failed with network error: %w", err)
 	}
-
-	if res.StatusCode != http.StatusOK {
+	switch res.StatusCode {
+	case http.StatusOK, http.StatusNotFound:
+		return res, nil
+	default:
 		return nil, errNon2XX(res.StatusCode)
 	}
-	return res, nil
 }

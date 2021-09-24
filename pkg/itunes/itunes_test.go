@@ -14,8 +14,6 @@ import (
 )
 
 //go:generate mockery -name Doer
-//go:generate curl -i https://itunes.apple.com/search?country=gb&entity=album&term=the+killers+-+sams+town -o ./testdata/sams_town
-//go:generate curl -i https://itunes.apple.com/search?country=gb\u0026entity=album\u0026term=the+killers+-+sams+town -o ./testdata/bad_request
 func TestClient_Search(t *testing.T) {
 	stubCtx := context.Background()
 
@@ -50,6 +48,15 @@ func TestClient_Search(t *testing.T) {
 						ArtworkURL60:   "https://is2-ssl.mzstatic.com/image/thumb/Music125/v4/3f/29/f0/3f29f099-2e2e-7c26-52f6-600f1ad405c3/source/60x60bb.jpg",
 					},
 				},
+			},
+		},
+		{
+			name:        "no results returned",
+			FixtureFile: "./testdata/no_results",
+			error:       nil,
+			expected: SearchResponse{
+				ResultCount: 0,
+				Results:     []Result{},
 			},
 		},
 		{

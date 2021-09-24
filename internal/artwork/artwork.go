@@ -2,6 +2,7 @@ package artwork
 
 import (
 	"context"
+	"net/http"
 
 	itunesCli "bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/pkg/itunes"
 
@@ -12,7 +13,7 @@ import (
 type Adapter func(ctx context.Context, term, country, entity string) (SearchResponse, error)
 
 // Itunes is a constructor func that creates the itunes artwork adapter
-func Itunes(endpoint string, logger commonlogger.ErrorInfoDebugger) (Adapter, error) {
+func Itunes(endpoint string, client http.Client, logger commonlogger.ErrorInfoDebugger) (Adapter, error) {
 	cli, err := itunesCli.New(
 		itunesCli.SetDomain(endpoint),
 		itunesCli.WithLogger(logger),

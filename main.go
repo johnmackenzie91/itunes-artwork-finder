@@ -1,14 +1,16 @@
 package main
 
 import (
+	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app"
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/artwork"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/env"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/logger"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/server"
-	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/artwork"
 )
 
 func main() {
@@ -21,7 +23,11 @@ func main() {
 	log := logger.New(e)
 
 	// init clients that speak to downstream services
-	finderAdapter, err := artwork.Itunes(e.ItunesEndpoint, log)
+	finderAdapter, err := artwork.Itunes(
+		e.ItunesEndpoint,
+		http.Client{Timeout: 5 * time.Second},
+		log,
+	)
 
 	if err != nil {
 		panic(err)
