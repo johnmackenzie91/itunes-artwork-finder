@@ -2,8 +2,6 @@ package main
 
 import (
 	"net/http"
-	"os"
-	"os/signal"
 	"time"
 
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app"
@@ -16,9 +14,6 @@ import (
 func main() {
 	// Load environment variables
 	e := env.MustLoad()
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
 
 	log := logger.New(e)
 
@@ -37,16 +32,12 @@ func main() {
 	a := app.New(finderAdapter, log)
 	svr := server.New(e, a, log)
 
-	// wait until server shut down or os interrupts
-	select {
-	case <-quit:
-		log.Info("OS Interrupt ....")
-		log.Info("closing down server ...")
-	case err, open := <-svr.ListenAndServe():
-		if open {
-			log.Error(err)
-			break
-		}
-		log.Info("closing down server...")
+	// ListenAndServe hangs until server is closed, or error received
+	if err := svr.ListenAndServe(); err != nil {
+		panic(err)
+	}
+
+	if err := svr.Shutdown(); err != nil {
+		panic(err)
 	}
 }
