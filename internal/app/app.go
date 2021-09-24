@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/middleware/logging"
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/middleware"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/redoc"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/artwork"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/domain"
@@ -23,7 +23,7 @@ func New(client artwork.Adapter, logger commonlogger.ErrorInfoDebugger) http.Han
 	r := chi.NewMux()
 
 	// init request/response middleware
-	r.Use(logging.LoggingMiddleware(logger))
+	r.Use(middleware.Logging(logger))
 
 	// init the documentation endpoints
 	docEndpoints := redoc.New(logger)

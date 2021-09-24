@@ -1,4 +1,4 @@
-package logging
+package middleware
 
 import (
 	"net/http"
@@ -7,7 +7,7 @@ import (
 )
 
 // LoggingMiddleware logs the incoming HTTP request & its duration.
-func LoggingMiddleware(logger commonlogger.ErrorInfoDebugger) func(http.Handler) http.Handler {
+func Logging(logger commonlogger.ErrorInfoDebugger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			defer func() {
@@ -28,6 +28,5 @@ func LoggingMiddleware(logger commonlogger.ErrorInfoDebugger) func(http.Handler)
 			// log response
 			logger.Info(r.Context(), wrapped, "response sent")
 		})
-
 	}
 }
