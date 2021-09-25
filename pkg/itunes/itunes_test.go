@@ -14,25 +14,22 @@ import (
 )
 
 //go:generate mockery -name Doer
-//go:generate curl -i https://itunes.apple.com/search?country=gb&entity=album&term=the+killers+-+sams+town -o ./testdata/sams_town
-//go:generate curl -i https://itunes.apple.com/search?country=gb\u0026entity=album\u0026term=the+killers+-+sams+town -o ./testdata/bad_request
 func TestClient_Search(t *testing.T) {
 	stubCtx := context.Background()
 
 	tests := []struct {
-		name       string
-		setUpMocks func(client *mocks.Doer)
-		expected   SearchResponse
-		error      error
+		name        string
+		setUpMocks  func(client *mocks.Doer)
+		FixtureFile string
+		expected    SearchResponse
+		error       error
 	}{
 		{
-			name: "results returned",
-			setUpMocks: func(client *mocks.Doer) {
-				res := httptestfixtures.MustLoadRequest(t, "./testdata/sams_town")
-				client.On("Do", mock.Anything).Return(res, nil)
-			},
+			name:        "results returned",
+			FixtureFile: "./testdata/sams_town",
 			expected: SearchResponse{
 				ResultCount: 2,
+
 				Results: []Result{
 					{
 						WrapperType:    "collection",
@@ -54,19 +51,27 @@ func TestClient_Search(t *testing.T) {
 			},
 		},
 		{
-			name: "bad response",
-			setUpMocks: func(client *mocks.Doer) {
-				res := httptestfixtures.MustLoadRequest(t, "./testdata/bad_request")
-				client.On("Do", mock.Anything).Return(res, nil)
+			name:        "no results returned",
+			FixtureFile: "./testdata/no_results",
+			error:       nil,
+			expected: SearchResponse{
+				ResultCount: 0,
+				Results:     []Result{},
 			},
-			error: errNon2XX(http.StatusBadRequest),
+		},
+		{
+			name:        "bad response",
+			FixtureFile: "./testdata/bad_request",
+			error:       errNon2XX(http.StatusBadRequest),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockClient := mocks.Doer{}
-			tt.setUpMocks(&mockClient)
+
+			res := httptestfixtures.MustLoadRequest(t, tt.FixtureFile)
+			mockClient.On("Do", mock.Anything).Return(res, nil)
 
 			c := Client{
 				client: &mockClient,
@@ -75,6 +80,7 @@ func TestClient_Search(t *testing.T) {
 			got, err := c.Search(stubCtx, "n/a", "n/a", "n/a")
 			assert.Equal(t, tt.expected, got)
 			assert.ErrorIs(t, err, tt.error)
+			assert.Nil(t, res.Body.Close())
 		})
 	}
 }

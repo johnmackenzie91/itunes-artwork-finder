@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/finder"
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/artwork"
 
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
@@ -69,14 +69,14 @@ var (
 	stubRequest, _ = http.NewRequest("GET", "http://stub.stub", nil)
 	stubCtx        = context.Background()
 	errTest        = errors.New("test error")
-	emptyResponse  = finder.SearchResponse{}
+	emptyResponse  = artwork.SearchResponse{}
 )
 
 func Test_handlers_GetRestV1AlbumSearch(t *testing.T) {
 	testCases := []struct {
 		desc            string
 		inputParameters GetRestV1AlbumSearchParams
-		mockCallback    finder.Func
+		mockCallback    artwork.Adapter
 		expectedOut     string
 		expectedCode    int
 	}{
@@ -85,10 +85,10 @@ func Test_handlers_GetRestV1AlbumSearch(t *testing.T) {
 			inputParameters: GetRestV1AlbumSearchParams{
 				Title: "some title",
 			},
-			mockCallback: func(ctx context.Context, term, country, entity string) (finder.SearchResponse, error) {
-				return finder.SearchResponse{
+			mockCallback: func(ctx context.Context, term, country, entity string) (artwork.SearchResponse, error) {
+				return artwork.SearchResponse{
 					ResultCount: 1,
-					Results: []finder.Result{
+					Results: []artwork.Result{
 						{
 							Artist:         "some artist",
 							CollectionName: "some title",
@@ -105,8 +105,8 @@ func Test_handlers_GetRestV1AlbumSearch(t *testing.T) {
 			inputParameters: GetRestV1AlbumSearchParams{
 				Title: "some title",
 			},
-			mockCallback: func(ctx context.Context, term, country, entity string) (finder.SearchResponse, error) {
-				return finder.SearchResponse{}, errTest
+			mockCallback: func(ctx context.Context, term, country, entity string) (artwork.SearchResponse, error) {
+				return artwork.SearchResponse{}, errTest
 			},
 			expectedCode: http.StatusBadGateway,
 			expectedOut:  `{"msg":"bad gateway"}`,
@@ -114,7 +114,7 @@ func Test_handlers_GetRestV1AlbumSearch(t *testing.T) {
 		{
 			desc:            "3. required artist parameter missing",
 			inputParameters: GetRestV1AlbumSearchParams{},
-			mockCallback:    finder.Func(nil),
+			mockCallback:    artwork.Adapter(nil),
 			expectedCode:    http.StatusBadRequest,
 			expectedOut:     `{"msg":"bad request"}`,
 		},
@@ -124,10 +124,10 @@ func Test_handlers_GetRestV1AlbumSearch(t *testing.T) {
 				Artist: func(input string) *string { return &input }("some artist"),
 				Title:  "album two",
 			},
-			mockCallback: func(ctx context.Context, term, country, entity string) (finder.SearchResponse, error) {
-				return finder.SearchResponse{
+			mockCallback: func(ctx context.Context, term, country, entity string) (artwork.SearchResponse, error) {
+				return artwork.SearchResponse{
 					ResultCount: 1,
-					Results: []finder.Result{
+					Results: []artwork.Result{
 						{
 							Artist:         "some artist",
 							CollectionName: "album one",
