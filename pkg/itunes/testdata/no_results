@@ -1,0 +1,37 @@
+HTTP/2 200 
+x-apple-jingle-correlation-key: BAF2OM7AQE43PUEDWAPDZMFIJE
+x-apple-request-uuid: 080ba733-e081-39b7-d083-b01e3cb0a849
+x-apple-translated-wo-url: /WebObjects/MZStoreServices.woa/ws/wsSearch?country=gb&entity=album&term=ddwed+-+fwefwefwefwf&urlDesc=
+apple-tk: false
+x-b3-spanid: 77bed211464f7b37
+content-type: text/javascript; charset=utf-8
+b3: 080ba733e08139b7d083b01e3cb0a849-77bed211464f7b37
+x-content-type-options: nosniff
+x-b3-traceid: 080ba733e08139b7d083b01e3cb0a849
+x-webobjects-loadaverage: 0
+x-responding-instance: MZStoreServices:2003816:::
+apple-seq: 0
+content-disposition: attachment; filename=1.txt
+apple-originating-system: MZStoreServices
+strict-transport-security: max-age=31536000
+x-apple-orig-url: https://mzstoreservices-int-st.itunes.apple.com/search?country=gb&entity=album&term=ddwed+-+fwefwefwefwf
+x-apple-application-site: ST11
+apple-timing-app: 31 ms
+x-apple-application-instance: 2003816
+cache-control: max-age=86400
+date: Fri, 24 Sep 2021 13:00:19 GMT
+content-length: 42
+x-cache: TCP_MISS from a92-123-142-70.deploy.akamaitechnologies.com (AkamaiGHost/10.4.4-34529956) (-)
+x-true-cache-key: /L/itunes.apple.com/search vcd=2897 ci2=country=gb&entity=album&term=ddwed+-+fwefwefwefwf///
+x-cache-remote: TCP_MISS from a23-206-170-76.deploy.akamaitechnologies.com (AkamaiGHost/10.4.4-34529956) (-)
+x-apple-partner: origin.0
+
+
+
+
+{
+ "resultCount":0,
+ "results": []
+}
+
+

@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"strings"
 
-	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/middleware/logging"
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/middleware"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/app/redoc"
+	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/artwork"
 	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/domain"
-	"bitbucket.org/johnmackenzie91/itunes-artwork-proxy-api/internal/finder"
 
 	"github.com/go-chi/chi"
 	"github.com/johnmackenzie91/commonlogger"
@@ -19,11 +19,11 @@ import (
 var _ ServerInterface = (*handlers)(nil)
 
 // New implements the implmentation of the interface generated from the openapi spec.
-func New(client finder.Func, logger commonlogger.ErrorInfoDebugger) http.Handler {
+func New(client artwork.Adapter, logger commonlogger.ErrorInfoDebugger) http.Handler {
 	r := chi.NewMux()
 
 	// init request/response middleware
-	r.Use(logging.LoggingMiddleware(logger))
+	r.Use(middleware.Logging(logger))
 
 	// init the documentation endpoints
 	docEndpoints := redoc.New(logger)
@@ -38,7 +38,7 @@ func New(client finder.Func, logger commonlogger.ErrorInfoDebugger) http.Handler
 }
 
 type handlers struct {
-	Client finder.Func
+	Client artwork.Adapter
 	logger commonlogger.ErrorInfoDebugger
 }
 
